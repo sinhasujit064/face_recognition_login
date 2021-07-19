@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to capture picture from webcam with Webcam.js</title>
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{{url_for('static',filename='FileSaver.min.js')}}" ></script>
+</head>
+<body>
+
+
+    <style>
+    #my_camera,#results{
+        width: 320px;
+        height: 240px;
+        border: 2px solid blue;
+    }
+    .btt{
+    	margin: 5px;
+    }
+	</style>
+
+	<!-- -->
+	<div class="container">
+		<h1></h1>
+		<div class="row" style="margin-top: 20px;">
+			<div class="col-md-6">
+	<center><div id="my_camera"></div>
+	<input type="button" class="btn btn-primary btt" id="configure" value="Configure" onClick="configure()">
+	<input type="button" class="btn btn-primary btt" id="snap" value="Take Snapshot" onClick="take_snapshot()"></center>
+
+	</div>
+	<div class="col-md-6">
+    <center><div id="results"  ></div>
+    <input type="button" class="btn btn-primary btt" value="Save Snapshot" id="save" onClick="saveSnap()">
+    <input type="button" class="btn btn-primary btt" id="snpbtn" disabled="disabled" value="Retake"  onClick="configure()">
+</center>
+</div>
+			<div class="col-md-12" style="margin-top:50px;padding:10px;" >
+	<center>		<form  action="{{url_for('insert')}}" method="POST" enctype="multipart/form-data">
+				<input style="margin-bottom:15px" id="file" disabled="disabled" type="file" class="form-control" name="image" accept="image/jfif,image/jpg" />
+				<input class="btn btn-success" style="padding:10px;" id="butt" disabled="disabled"  type="submit" value="Register">
+			</form>
+		</center>
+				</div>
+    </div>
+	</div>
+	<!-- Script -->
+	<script type="text/javascript" src="{{url_for('static',filename='webcamjs/webcam.min.js')}}"></script>
+
+	<!-- Code to handle taking the snapshot and displaying it locally -->
+	<script language="JavaScript">
+
+
+		function configure(){
+			Webcam.set({
+				width: 320,
+				height: 240,
+				image_format: 'jpeg',
+				jpeg_quality: 90
+			});
+			Webcam.attach( '#my_camera' );
+		}
+
+
+
+
+
+		function take_snapshot() {
+
+
+			// take snapshot and get image data
+			Webcam.snap( function(data_uri) {
+				// display results in page
+				document.getElementById('results').innerHTML =
+					'<img id="imageprev" src="'+data_uri+'"/>';
+
+			} );
+
+			Webcam.reset();
+			document.getElementById("snpbtn").removeAttribute("disabled");
+
+		}
+
+		function saveSnap(){
+
+
+
+
+
+    		let btnDownload = document.getElementById('save');
+let img = document.getElementById('imageprev');
+
+
+
+
+    let imagePath = img.getAttribute('src');
+
+    let fileName = getFileName(imagePath);
+    saveAs(imagePath,"{{first}}");
+	document.getElementById("configure").setAttribute("disabled","disabled");
+			document.getElementById("snap").setAttribute("disabled","disabled");
+			document.getElementById("snpbtn").setAttribute("disabled","disabled");
+			document.getElementById("save").setAttribute("disabled","disabled");
+			document.getElementById("file").removeAttribute("disabled");
+			document.getElementById("butt").removeAttribute("disabled");
+
+function getFileName(str) {
+    return str.substring(str.lastIndexOf('/') + 1)
+}
+
+		}
+
+
+	</script>
+
+</body>
+</html>
